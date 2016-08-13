@@ -240,7 +240,13 @@ func (s *Sysstat) parse(acc telegraf.Accumulator, option string, ts time.Time) e
 		}
 
 		device := record[3]
-		value, err := strconv.ParseFloat(record[5], 64)
+
+		// If you run sadf on a PT-BR Linux machine
+		// the decimal points delimiter its "," insted of "."
+		// Here we should replace to prevent errors on ParseFloat
+		safeRecord = strings.Replace(record[5], ",", ".", -1)
+
+		value, err := strconv.ParseFloat(safeRecord, 64)
 		if err != nil {
 			return err
 		}
